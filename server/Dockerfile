@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS base
 
 # konlpy(Okt)는 JVM이 필요하다
 RUN apt-get update \
@@ -15,7 +15,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN useradd --create-home app && chown -R app /app
+
+# CI용: docker build --target test -t treddit-server-test . && docker run --rm treddit-server-test
+FROM base AS test
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements-dev.txt
+CMD ["pytest", "-v"]
+
+
+FROM base AS runtime
+RUN rm -rf tests requirements-dev.txt pytest.ini \
+    && useradd --create-home app && chown -R app /app
 USER app
 
 EXPOSE 8000

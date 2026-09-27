@@ -1,6 +1,7 @@
 """파이프라인이 쓰는 테이블 정의.
 
-server/models.py의 Article, DailyKeyword, TopicTrend와 같은 스키마를 유지해야 한다.
+스키마는 server의 Alembic 마이그레이션이 관리한다.
+server/models.py의 Article, DailyKeyword, TopicTrend와 같은 정의를 유지해야 한다.
 """
 from sqlalchemy import Column, Date, DateTime, Integer, String, Text, UniqueConstraint, create_engine
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
@@ -47,7 +48,3 @@ class TopicTrend(Base):
     topic = Column(String(100), nullable=False)
     frequency = Column(Integer, nullable=False)
     rank = Column(Integer, nullable=False)
-
-
-def init_db():
-    Base.metadata.create_all(bind=engine)

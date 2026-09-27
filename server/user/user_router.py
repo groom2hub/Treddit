@@ -41,7 +41,7 @@ def login(login_form: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
 
     return user_schema.Token(access_token=access_token, token_type="bearer", username=user.user_name, email=user.user_email)
 
-@router.get("/me")
+@router.get("/me", response_model=user_schema.UserInfo)
 def read_me(db: Session = Depends(get_db), email: str = Depends(user_crud.get_current_user)):
     if not email:
         raise HTTPException(status_code=401, detail="Not Authorized")

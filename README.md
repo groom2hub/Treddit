@@ -15,7 +15,7 @@
 
 - [x] Phase 0. 원본 이관 및 정리 (히스토리·비밀키·산출물 제외)
 - [x] Phase 1. 환경변수 기반 설정, Dockerfile/compose 재작성
-- [ ] Phase 2. CSV → DB 전환, 버그 수정, 테스트 추가
+- [x] Phase 2. CSV → DB 전환, 버그 수정, 테스트 추가
 - [ ] Phase 3. Jenkins CI
 - [ ] Phase 4. Kubernetes (k3s) 배포 + ArgoCD
 - [ ] Phase 5. 모니터링, 프론트엔드 Vite 전환
@@ -44,6 +44,24 @@ docker compose run --rm pipeline run --date 20260926 --skip-crawl
 
 # KbyC 시절 CSV 결과(data/outputs/{YYYYMMDD}/)를 DB로 이관
 docker compose run --rm pipeline import-csv /data/outputs
+```
+
+### DB 마이그레이션
+
+스키마는 `server/`의 Alembic이 관리합니다. `docker compose up` 시 `migrate` 서비스가 `alembic upgrade head`를 실행한 뒤 server가 뜹니다.
+
+```bash
+# 모델 변경 후 마이그레이션 파일 생성
+docker compose run --rm -v "$PWD/server:/app" migrate alembic revision --autogenerate -m "설명"
+```
+
+### 테스트
+
+각 서비스 이미지의 `test` 스테이지에서 pytest를 실행합니다 (DB는 SQLite 사용, MySQL 불필요).
+
+```bash
+docker build --target test -t treddit-server-test server && docker run --rm treddit-server-test
+docker build --target test -t treddit-pipeline-test pipeline && docker run --rm treddit-pipeline-test
 ```
 
 프론트엔드 개발 서버(`npm start`)는 `package.json`의 `proxy` 설정으로 `/api` 요청을 `localhost:8000`에 전달합니다.
