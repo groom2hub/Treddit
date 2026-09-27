@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate
+  annotations:
+    argocd.argoproj.io/hook: PreSync                              # 배포(Sync) 전에 실행
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation     # 이전 Job을 지우고 새로 생성
+spec:
+  backoffLimit: 5            # 실패 시 재시도 횟수 (MySQL이 아직 준비 중일 수 있음)
+  template:
+    spec:
+      restartPolicy: Never   # Job은 Always를 쓸 수 없다. 실패하면 새 Pod로 재시도
+      containers:
+        - name: migrate
+          image: ghcr.io/groom2hub/treddit-server   # Jenkins가 main에서 push한 이미지
+          command: ["alembic", "upgrade", "head"]
+          envFrom:
+            - secretRef:
+                name: treddit-secrets
+          env:
+            # .env의 DATABASE_URL(127.0.0.1)을 덮어쓴다. $(VAR)는 위 Secret 값으로 치환된다
+            - name: DATABASE_URL
+              value: mysql+pymysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@mysql:3306/$(MYSQL_DATABASE)
