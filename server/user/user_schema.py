@@ -1,4 +1,6 @@
-from pydantic import BaseModel, EmailStr, field_validator
+import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 from pydantic_core.core_schema import FieldValidationInfo
 
 from fastapi import HTTPException
@@ -46,6 +48,17 @@ class PasswordUpdate(BaseModel):
         if 'new_password' in values.data and v != values.data['new_password']:
             raise HTTPException(status_code=422, detail="비밀번호가 일치하지 않습니다.")
         return v
+
+class UserInfo(BaseModel):
+    """비밀번호 해시를 응답에서 제외하기 위한 사용자 정보 스키마"""
+    model_config = ConfigDict(from_attributes=True)
+
+    user_id: int
+    user_name: str
+    user_email: str
+    user_status: str | None
+    created_at: datetime.datetime
+    last_connected_at: datetime.datetime | None
 
 class Token(BaseModel):
     access_token: str

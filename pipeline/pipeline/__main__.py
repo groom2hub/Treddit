@@ -14,7 +14,7 @@ from sqlalchemy import delete, select
 
 from pipeline import analysis, crawler
 from pipeline.config import settings
-from pipeline.db import Article, DailyKeyword, SessionLocal, TopicTrend, init_db
+from pipeline.db import Article, DailyKeyword, SessionLocal, TopicTrend
 
 log = logging.getLogger("pipeline")
 KST = ZoneInfo("Asia/Seoul")
@@ -128,7 +128,6 @@ def main():
     import_parser.add_argument("outputs_dir", type=Path)
 
     args = parser.parse_args()
-    init_db()
 
     if args.command == "run":
         run(args.date or yesterday_kst(), args.skip_crawl)

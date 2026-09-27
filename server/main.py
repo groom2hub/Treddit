@@ -2,7 +2,11 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import nlp
 from config import settings
+
+# JVM(konlpy)은 반드시 메인 스레드에서 시작해야 종료 시 멈추지 않는다 (nlp.okt 참고)
+nlp.okt()
 
 app = FastAPI()
 
@@ -28,11 +32,6 @@ def read_root1():
 def health():
     return {"status": "ok"}
 
-
-# 테이블 생성
-import models
-from database import engine
-models.Base.metadata.create_all(bind=engine)
 
 from user import user_router
 from post import post_router

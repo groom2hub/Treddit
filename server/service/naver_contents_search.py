@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 from pydantic import BaseModel
 
+import nlp
+
 class SearchWord(BaseModel):
     content: str
 
@@ -70,11 +72,10 @@ def search_naver_contents(keyword):
     titles = blog_titles + cafe_titles
 
     import pandas as pd
-    from konlpy.tag import Okt
     import time
     import re
 
-    okt = Okt()
+    okt = nlp.okt()
 
     filtered_sentences = []
 

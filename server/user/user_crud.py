@@ -5,7 +5,7 @@ from user.user_schema import UserCreate, UsernameUpdate, PasswordUpdate
 import datetime
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
+from jose import JWTError, jwt
 from fastapi import HTTPException, Depends
 
 from config import settings
@@ -43,10 +43,14 @@ def create_access_token(email: str):
     return access_token
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
-    payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+    except JWTError:
+        # 만료되었거나 위조된 토큰
+        raise HTTPException(status_code=401, detail="Invalid Token", headers={"WWW-Authenticate": "Bearer"})
     user_email: str = payload.get("sub")
     if not user_email:
-        raise HTTPException(status_code=404, detail="User Not Found")
+        raise HTTPException(status_code=401, detail="Invalid Token", headers={"WWW-Authenticate": "Bearer"})
     return user_email
 
 def read_my_info(db: Session, email: str):
@@ -90,4 +94,4 @@ def update_password(db: Session, user: PasswordUpdate, email: str):
 
     db.commit()
 
-    return user
+    return {"detail": "비밀번호가 변경되었습니다."}

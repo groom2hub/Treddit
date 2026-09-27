@@ -1,9 +1,9 @@
 from collections import Counter
 from email.utils import parsedate_to_datetime
-from functools import cache
 
 from pydantic import BaseModel
 
+from nlp import okt
 from . import naver_openapi
 
 PAGE_SIZE = 10
@@ -13,13 +13,6 @@ class SearchWord(BaseModel):
     content: str
     page: int
     page2: int
-
-
-@cache
-def okt():
-    # JVM 기동이 느리므로 처음 필요할 때 한 번만 만든다
-    from konlpy.tag import Okt
-    return Okt()
 
 
 def fetch_news(keyword: str, page: int, page2: int) -> list[dict]:
