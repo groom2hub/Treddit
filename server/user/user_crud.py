@@ -3,19 +3,20 @@ from sqlalchemy.orm import Session
 from models import User
 from user.user_schema import UserCreate, UsernameUpdate, PasswordUpdate
 import datetime
-import os
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from fastapi import HTTPException, Depends
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+from config import settings
+
+SECRET_KEY = settings.jwt_secret_key
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
 
 def create_user(db: Session, user: UserCreate):
     new_user = User(user_name=user.username, user_password=pwd_context.hash(user.password), user_email=user.email, created_at=datetime.datetime.now())

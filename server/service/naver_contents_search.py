@@ -135,23 +135,4 @@ def search_naver_contents(keyword):
 
     print(word_counts)
 
-    top_words = dict(word_counts.most_common(20))
-    print(top_words)
-
-    from wordcloud import WordCloud
-    import matplotlib.pyplot as plt
-
-    wc = WordCloud(max_words=50,
-                   random_state=810,
-                   background_color='white',
-                   font_path=r"C:\Windows\Fonts\malgun.ttf"
-                   )
-    
-    wc.generate_from_frequencies(top_words)
-    #plt.figure(figsize=(8,8))
-    #plt.imshow(wc)
-    #plt.axis('off')
-    #plt.savefig('./frontend/public/{}_{}.png'.format(keyword, )) #그림을 저장
-    #plt.show()
-
     return {"keyword": keyword, "top_10_words": [word for word, count in top_10_words], "words_count": word_counts.most_common(10), "related_keywords": rel_list}

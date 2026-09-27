@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./WritePost.css";
 
-axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 const WritePost = () => {
   const navigate = useNavigate();

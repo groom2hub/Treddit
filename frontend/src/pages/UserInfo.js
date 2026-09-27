@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './UserInfo.css';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 const UserInfo = () => {
     const [user, setUser] = useState(null);

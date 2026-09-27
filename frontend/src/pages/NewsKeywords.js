@@ -3,7 +3,6 @@ import axios from 'axios';
 import WordCloud from 'react-wordcloud';
 import { useNavigate } from 'react-router-dom';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 const NewsKeywords = () => {
     const [wordsData, setWordsData] = useState([]);

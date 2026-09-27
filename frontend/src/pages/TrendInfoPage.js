@@ -14,9 +14,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import secret from '../secret.json';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 ChartJS.register(
   CategoryScale,
@@ -41,23 +39,18 @@ const TrendInfoPage = () => {
   const [loading3, setLoading3] = useState(true);
   const [posts, setPosts] = useState([]);
   const [definition, setDefinition] = useState('');
-  const naverClientId = secret.naverClientId;
-  const naverClientSecret = secret.naverClientSecret;
 
   const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchDefinition() {
       try {
-        const response = await axios.get(`https://openapi.naver.com/v1/search/encyc.json?query=${name}`, {
-          headers: {
-            'X-Naver-Client-Id': secret.naverClientId || '인증 오류',
-            'X-Naver-Client-Secret': secret.naverClientSecret || '인증 오류'
-          }
+        const response = await axios.get('/service/definition', {
+          params: { keyword: name }
         });
 
-        if (response.data.items && response.data.items.length > 0) {
-          setDefinition(response.data.items[0].description);
+        if (response.data.definition) {
+          setDefinition(response.data.definition);
         } else {
           setDefinition('정의를 찾을 수 없습니다.');
         }

@@ -12,13 +12,13 @@ function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8000')  // FastAPI 서버 주소
+    fetch('/api/')  // FastAPI 서버 주소
       .then(response => response.json())
       .then(data => setData(data));
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:8000/home')
+    fetch('/api/home')
       .then(response => response.json())
       .then(data1 => setData1(data1));
   }, []);

@@ -1,114 +1,49 @@
-version: "3.8"
-
 services:
-
   frontend:
-    build:
-      context: frontend/.
-      dockerfile: Dockerfile
-    container_name: my-web-frontend
+    build: ./frontend
     ports:
-      - 3000:3000
-    networks:
-      trenddit_network:
-        ipv4_address:
-          172.18.0.12
-    volumes:
-      - ./frontend:/workspace
-    command: npm start
+      - "3000:8080"
+    depends_on:
+      server:
+        condition: service_healthy
 
   server:
-    build:
-      context: server/.
-      dockerfile: Dockerfile
-    container_name: my-web-server
+    build: ./server
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@database:3306/${MYSQL_DATABASE}
     ports:
-      - 8000:8000
-    networks:
-      trenddit_network:
-        ipv4_address:
-          172.18.0.2
+      - "8000:8000"
     volumes:
-      - ./server:/workspace
-    command: uvicorn main:app --host 0.0.0.0 --reload
+      # 크롤링/NLP 결과 CSV (Phase 2에서 DB로 전환 예정)
+      - ./data/outputs:/app/outputs:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     depends_on:
       database:
-        condition: service_healthy  # 데이터베이스가 정상적으로 실행될 때까지 대기
+        condition: service_healthy
 
   database:
-    build:
-      context: database/.
-      dockerfile: Dockerfile
+    image: mysql:8.4
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ALLOW_EMPTY_PASSWORD=${MYSQL_ALLOW_EMPTY_PASSWORD}
-      - MYSQL_RANDOM_ROOT_PASSWORD=${MYSQL_RANDOM_ROOT_PASSWORD}
-    container_name: my-web-database-mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - 3306:3306
-    networks:
-      trenddit_network:
-        ipv4_address:
-          172.18.0.3
+      - "127.0.0.1:3306:3306"
     volumes:
-        - ./database:/workspace
+      - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${MYSQL_USER} -p${MYSQL_PASSWORD}"]  # 데이터베이스 헬스체크
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
 
-  naverkeyword:
-    build:
-      context: crawl/.
-      dockerfile: Dockerfile
-    container_name: my-web-naver-keyword
-    volumes:
-      - ./crawl:/workspace
-    command: >
-      bash -c "python3 naverKeyword.py
-      && python3 naverDictionary.py
-      && python3 naverArticleRank.py"
-
-# # Hadoop
-#   namenode:
-#     image: apache/hadoop:3
-#     hostname: namenode
-#     command: ["hdfs", "namenode"]
-#     ports:
-#       - 9870:9870
-#     env_file:
-#       - ./hadoop/config
-#     environment:
-#         ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
-#   datanode1:
-#     image: apache/hadoop:3
-#     command: ["hdfs", "datanode"]
-#     env_file:
-#       - ./hadoop/config
-#   datanode2:
-#     image: apache/hadoop:3
-#     command: ["hdfs", "datanode"]
-#     env_file:
-#       - ./hadoop/config
-
-#   resourcemanager:
-#     image: apache/hadoop:3
-#     hostname: resourcemanager
-#     command: ["yarn", "resourcemanager"]
-#     ports:
-#         - 8088:8088
-#     env_file:
-#       - ./hadoop/config
-#     volumes:
-#       - ./test.sh:/opt/test.sh
-#   nodemanager:
-#     image: apache/hadoop:3
-#     command: ["yarn", "nodemanager"]
-#     env_file:
-#       - ./hadoop/config
-
-########################################
-networks:
-  trenddit_network:
-    external: true
+volumes:
+  mysql-data:

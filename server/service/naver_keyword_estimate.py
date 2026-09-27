@@ -1,14 +1,12 @@
 #통합검색어 트렌드 확인
-import os
+from config import settings
 import urllib.request
 import json
 import pandas as pd
-import matplotlib.pyplot as plt
-#plt.rc('font', family='Malgun Gothic')
 
 def get_trend_data(keyword, start_date, end_date):
-    client_id = os.getenv('NAVER_CLIENT_ID')
-    client_secret = os.getenv('NAVER_CLIENT_SECRET')
+    client_id = settings.naver_client_id
+    client_secret = settings.naver_client_secret
     
     time_unit='date' 
     keyword_groups = [
@@ -88,9 +86,9 @@ def get_header(method, uri, api_key, secret_key, customer_id):
 def get_results(keyword: str):
 
     BASE_URL = 'https://api.naver.com'
-    API_KEY = os.getenv('NAVER_AD_API_KEY')
-    SECRET_KEY = os.getenv('NAVER_AD_SECRET_KEY')
-    CUSTOMER_ID = os.getenv('NAVER_AD_CUSTOMER_ID')
+    API_KEY = settings.naver_ad_api_key
+    SECRET_KEY = settings.naver_ad_secret_key
+    CUSTOMER_ID = settings.naver_ad_customer_id
 
     uri = '/keywordstool'
     method = 'GET'

@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./UpdatePost.css";
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 const UpdatePost = () => {
     const { id } = useParams();

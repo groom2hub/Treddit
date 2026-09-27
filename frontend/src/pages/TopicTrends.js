@@ -7,7 +7,6 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TopicTrends.css';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 const TopicTrends = () => {
     const [trendData, setTrendData] = useState([]);
