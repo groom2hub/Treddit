@@ -6,7 +6,6 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './RealtimeSearchWords.css';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 const RealtimeSearchWords = () => {
     const [wordsList, setWordsList] = useState([]);

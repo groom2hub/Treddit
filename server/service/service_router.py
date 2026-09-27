@@ -9,6 +9,7 @@ from . import naver_contents_search
 from . import news_keywords
 from . import realtime_searchwords
 from . import topic_trends
+from . import naver_encyclopedia
 
 router = APIRouter(
      prefix='/service'
@@ -61,3 +62,7 @@ def get_word_cloud():
 @router.get("/titles")
 def get_titles():
     return google_trends.get_trends_list()
+
+@router.get("/definition")
+def get_definition(keyword: str):
+    return naver_encyclopedia.get_definition(keyword)

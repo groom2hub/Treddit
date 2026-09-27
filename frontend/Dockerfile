@@ -1,8 +1,11 @@
-# frontend/Dockerfile
-FROM node
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --legacy-peer-deps
+COPY . .
+RUN npm run build
 
-WORKDIR /workspace
-RUN npm install axios
-RUN npm install chart.js
-RUN npm install react-chartjs-2
-RUN npm install react-wordcloud --save --legacy-peer-deps
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 8080

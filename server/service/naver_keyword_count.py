@@ -1,4 +1,4 @@
-import os
+from config import settings
 import pandas as pd
 import time
 import requests
@@ -32,9 +32,9 @@ def get_header(method, uri, api_key, secret_key, customer_id):
 def get_results(keyword: str):
 
     BASE_URL = 'https://api.naver.com'
-    API_KEY = os.getenv('NAVER_AD_API_KEY')
-    SECRET_KEY = os.getenv('NAVER_AD_SECRET_KEY')
-    CUSTOMER_ID = os.getenv('NAVER_AD_CUSTOMER_ID')
+    API_KEY = settings.naver_ad_api_key
+    SECRET_KEY = settings.naver_ad_secret_key
+    CUSTOMER_ID = settings.naver_ad_customer_id
 
     uri = '/keywordstool'
     method = 'GET'

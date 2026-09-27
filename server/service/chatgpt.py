@@ -1,14 +1,11 @@
 import openai
 from pydantic import BaseModel
-import os
-from dotenv import load_dotenv
+from config import settings
 
 class Conversation(BaseModel):
     history: list
 
-load_dotenv()
-
-openai.api_key = os.getenv('OPENAI_KEY')
+openai.api_key = settings.openai_key
 
 def get_answer(data: Conversation):
     response = openai.ChatCompletion.create(

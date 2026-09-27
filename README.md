@@ -15,12 +15,21 @@
 ## 로드맵
 
 - [x] Phase 0. 원본 이관 및 정리 (히스토리·비밀키·산출물 제외)
-- [ ] Phase 1. 환경변수 기반 설정, Dockerfile/compose 재작성
+- [x] Phase 1. 환경변수 기반 설정, Dockerfile/compose 재작성
 - [ ] Phase 2. CSV → DB 전환, 버그 수정, 테스트 추가
 - [ ] Phase 3. Jenkins CI
 - [ ] Phase 4. Kubernetes (k3s) 배포 + ArgoCD
 - [ ] Phase 5. 모니터링, 프론트엔드 Vite 전환
 
-## 설정
+## 로컬 실행
 
-`.env.example`을 `.env`로 복사한 뒤 값을 채웁니다.
+```bash
+cp .env.example .env   # 값 채우기
+docker compose up -d --build
+```
+
+- 웹: http://localhost:3000 (nginx가 `/api/*`를 백엔드로 프록시)
+- API 문서: http://localhost:8000/docs
+- 트렌드 화면은 `data/outputs/{YYYYMMDD}/*.csv`를 읽습니다 (Phase 2에서 DB로 전환 예정)
+
+프론트엔드 개발 서버(`npm start`)는 `package.json`의 `proxy` 설정으로 `/api` 요청을 `localhost:8000`에 전달합니다.

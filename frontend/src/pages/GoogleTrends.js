@@ -6,7 +6,6 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './GoogleTrends.css';
 
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 
 const GoogleTrends = () => {
     const [trends, setTrends] = useState([]);
