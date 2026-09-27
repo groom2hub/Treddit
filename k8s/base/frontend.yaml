@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/groom2hub/treddit-frontend:1cb0eed
+          image: ghcr.io/groom2hub/treddit-frontend
           ports:
             - containerPort: 8080     # nginx-unprivileged는 80이 아니라 8080을 쓴다
           readinessProbe:

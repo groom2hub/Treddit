@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: treddit      # 아래 모든 리소스에 namespace를 붙인다
+resources:
+  - namespace.yaml
+  - mysql.yaml
+  - migrate-job.yaml
+  - server.yaml
+  - frontend.yaml
+  - ingress.yaml
+  - pipeline-cronjob.yaml

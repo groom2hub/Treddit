@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: ghcr.io/groom2hub/treddit-server:1cb0eed
+          image: ghcr.io/groom2hub/treddit-server
           ports:
             - containerPort: 8000
           envFrom:

@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never   # Job은 Always를 쓸 수 없다. 실패하면 새 Pod로 재시도
       containers:
         - name: migrate
-          image: ghcr.io/groom2hub/treddit-server:1cb0eed   # Jenkins가 main에서 push한 이미지
+          image: ghcr.io/groom2hub/treddit-server   # Jenkins가 main에서 push한 이미지
           command: ["alembic", "upgrade", "head"]
           envFrom:
             - secretRef:

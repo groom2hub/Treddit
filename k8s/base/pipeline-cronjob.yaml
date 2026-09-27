@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pipeline
+spec:
+  schedule: "0 6 * * *"         # 분 시 일 월 요일 → 매일 06:00
+  timeZone: Asia/Seoul          # 없으면 UTC 기준 (한국 시간 15:00에 돌게 됨)
+  concurrencyPolicy: Forbid     # 이전 실행이 안 끝났으면 새로 시작하지 않는다 (중복 크롤링 방지)
+  successfulJobsHistoryLimit: 3 # 성공/실패 Job 기록은 3개씩만 보관
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2           # 실패 시 2번까지 재시도
+      activeDeadlineSeconds: 3600  # 1시간이 넘으면 강제 종료 (무한 대기 방지)
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: pipeline
+              image: ghcr.io/groom2hub/treddit-pipeline
+              # 이미지의 ENTRYPOINT(python -m pipeline) + CMD(run) 그대로 실행
+              envFrom:
+                - secretRef:
+                    name: treddit-secrets
+              env:
+                - name: DATABASE_URL
+                  value: mysql+pymysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@mysql:3306/$(MYSQL_DATABASE)
+              resources:
+                requests: { cpu: 500m, memory: 512Mi }
+                limits: { memory: 2Gi }   # LDA(토픽 100개) 학습에 메모리가 많이 든다
