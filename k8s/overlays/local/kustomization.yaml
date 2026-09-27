@@ -10,3 +10,6 @@ images:
     newTag: 1cb0eed
   - name: ghcr.io/groom2hub/treddit-frontend
     newTag: 1cb0eed
+replicas:
+  - name: frontend
+    count: 3
