@@ -9,8 +9,7 @@
 |---|---|
 | `frontend/` | React 웹 클라이언트 |
 | `server/` | FastAPI 백엔드 (회원, 게시판, 트렌드 API) |
-| `crawl/` | 네이버 뉴스·키워드 크롤러 |
-| `nlp/` | 기사 전처리 → LDA 토픽 모델링 → 트렌드 선정 |
+| `pipeline/` | 데이터 파이프라인: 네이버 뉴스 수집 → 명사 추출 → LDA 토픽 모델링 → 트렌드 선정 → DB 저장 |
 
 ## 로드맵
 
@@ -30,6 +29,21 @@ docker compose up -d --build
 
 - 웹: http://localhost:3000 (nginx가 `/api/*`를 백엔드로 프록시)
 - API 문서: http://localhost:8000/docs
-- 트렌드 화면은 `data/outputs/{YYYYMMDD}/*.csv`를 읽습니다 (Phase 2에서 DB로 전환 예정)
+
+### 데이터 파이프라인
+
+배치 작업이라 `up`으로는 뜨지 않고 필요할 때 실행합니다.
+
+```bash
+# 어제(KST) 뉴스 수집 + 분석
+docker compose run --rm pipeline run
+
+# 특정 날짜 / 수집 없이 저장된 기사로 재분석
+docker compose run --rm pipeline run --date 20260926
+docker compose run --rm pipeline run --date 20260926 --skip-crawl
+
+# KbyC 시절 CSV 결과(data/outputs/{YYYYMMDD}/)를 DB로 이관
+docker compose run --rm pipeline import-csv /data/outputs
+```
 
 프론트엔드 개발 서버(`npm start`)는 `package.json`의 `proxy` 설정으로 `/api` 요청을 `localhost:8000`에 전달합니다.

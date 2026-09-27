@@ -1,0 +1,10 @@
+pydantic-settings==2.2.1
+SQLAlchemy==2.0.28
+PyMySQL==1.1.0
+cryptography==42.0.5
+
+requests==2.31.0
+beautifulsoup4==4.12.3
+
+konlpy==0.6.0
+gensim==4.3.3

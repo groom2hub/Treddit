@@ -14,15 +14,26 @@ services:
       DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@database:3306/${MYSQL_DATABASE}
     ports:
       - "8000:8000"
-    volumes:
-      # 크롤링/NLP 결과 CSV (Phase 2에서 DB로 전환 예정)
-      - ./data/outputs:/app/outputs:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 10s
       timeout: 3s
       retries: 5
       start_period: 10s
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # 배치 작업이라 `up`에서는 뜨지 않는다. 실행: docker compose run --rm pipeline run --date YYYYMMDD
+  pipeline:
+    build: ./pipeline
+    profiles: ["batch"]
+    env_file: .env
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@database:3306/${MYSQL_DATABASE}
+    volumes:
+      # import-csv용 (KbyC 시절 CSV 결과)
+      - ./data:/data:ro
     depends_on:
       database:
         condition: service_healthy
