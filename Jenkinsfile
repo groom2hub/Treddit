@@ -60,6 +60,29 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy') {
+            when { branch 'main' }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-token',
+                                                  usernameVariable: 'GH_USER',
+                                                  passwordVariable: 'GH_TOKEN')]) {
+                    sh '''
+                        rm -rf manifests
+                        git clone "https://$GH_USER:$GH_TOKEN@github.com/groom2hub/Treddit-manifests.git" manifests
+                        cd manifests
+
+                        # 세 이미지의 태그를 이번 빌드의 커밋 SHA로 교체
+                        sed -i -E "s/(newTag: ).*/\\1$IMAGE_TAG/" overlays/local/kustomization.yaml
+                        git diff --stat
+
+                        git -c user.name="Jenkins" -c user.email="jenkins@treddit.local" \
+                            commit -am "deploy: treddit $IMAGE_TAG" || echo "변경 없음"
+                        git push origin HEAD:main
+                    '''
+                }
+            }
+        }
     }
 
     post {
