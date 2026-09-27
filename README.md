@@ -16,9 +16,21 @@
 - [x] Phase 0. 원본 이관 및 정리 (히스토리·비밀키·산출물 제외)
 - [x] Phase 1. 환경변수 기반 설정, Dockerfile/compose 재작성
 - [x] Phase 2. CSV → DB 전환, 버그 수정, 테스트 추가
-- [ ] Phase 3. Jenkins CI
-- [ ] Phase 4. Kubernetes (k3s) 배포 + ArgoCD
+- [x] Phase 3. Jenkins CI
+- [x] Phase 4. Kubernetes (로컬 k3d) 배포 + ArgoCD
 - [ ] Phase 5. 모니터링, 프론트엔드 Vite 전환
+
+## 배포 구조
+
+```
+Treddit (이 레포)  ── Jenkins ──▶  test → build → push ghcr.io/groom2hub/treddit-*:<sha>
+                                        │ 이미지 태그 커밋
+Treddit-manifests  ◀────────────────────┘   (k8s Kustomize 매니페스트)
+        ▲ ArgoCD가 감시 → k8s 클러스터에 자동 배포
+```
+
+- CI: [`Jenkinsfile`](Jenkinsfile), Jenkins 서버 정의는 [`infra/jenkins/`](infra/jenkins)
+- CD: [groom2hub/Treddit-manifests](https://github.com/groom2hub/Treddit-manifests)
 
 ## 로컬 실행
 
