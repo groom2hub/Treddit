@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 2                    # Pod 2개. 하나가 죽어도 서비스는 계속된다
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+        - name: server
+          image: ghcr.io/groom2hub/treddit-server:1cb0eed
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: treddit-secrets
+          env:
+            - name: DATABASE_URL
+              value: mysql+pymysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@mysql:3306/$(MYSQL_DATABASE)
+          readinessProbe:            # 통과해야 Service가 트래픽을 보낸다
+            httpGet:
+              path: /api/health
+              port: 8000
+            periodSeconds: 5
+          livenessProbe:             # 연속 실패하면 컨테이너를 재시작한다
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 20  # JVM(konlpy) 기동 시간을 고려
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }   # 평소 사용량 약 220MiB
+            limits: { memory: 512Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server         # frontend nginx 설정의 proxy_pass http://server:8000 과 이름이 같아야 한다
+spec:
+  selector:
+    app: server
+  ports:
+    - port: 8000
+      targetPort: 8000

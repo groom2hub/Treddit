@@ -1,0 +1,67 @@
+# StatefulSet Pod에 고정 DNS를 붙여주는 headless Service (clusterIP 없음)
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  clusterIP: None
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          ports:
+            - containerPort: 3306
+          # Secret에서 MySQL에 필요한 키만 골라서 주입한다 (최소 권한)
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: treddit-secrets, key: MYSQL_ROOT_PASSWORD }
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef: { name: treddit-secrets, key: MYSQL_DATABASE }
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef: { name: treddit-secrets, key: MYSQL_USER }
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: treddit-secrets, key: MYSQL_PASSWORD }
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+          # 요청을 받을 준비가 됐는지 확인 (compose의 healthcheck와 같은 역할)
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", 'mysqladmin ping -h 127.0.0.1 -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent']
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 100m, memory: 512Mi }
+            limits: { memory: 1Gi }
+  # Pod마다 전용 디스크(PVC)를 자동으로 만든다. Pod가 재시작돼도 데이터는 유지된다
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
