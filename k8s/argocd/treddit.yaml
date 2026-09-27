@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application          # ArgoCD 설치 때 추가된 CRD
+metadata:
+  name: treddit
+  namespace: argocd        # Application 자체는 argocd 네임스페이스에 둔다
+spec:
+  project: default
+  source:                  # 어디서 가져올지 (git)
+    repoURL: https://github.com/groom2hub/Treddit.git
+    targetRevision: main
+    path: k8s/overlays/local
+  destination:             # 어디에 배포할지 (클러스터)
+    server: https://kubernetes.default.svc   # ArgoCD가 설치된 바로 이 클러스터
+    namespace: treddit
+  syncPolicy:
+    automated:             # git이 바뀌면 자동으로 반영
+      prune: true          # git에서 지운 리소스는 클러스터에서도 지운다
+      selfHeal: true       # 누가 클러스터를 직접 바꾸면 git 상태로 되돌린다
