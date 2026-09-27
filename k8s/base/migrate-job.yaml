@@ -2,6 +2,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: migrate
+  annotations:
+    argocd.argoproj.io/hook: PreSync                              # 배포(Sync) 전에 실행
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation     # 이전 Job을 지우고 새로 생성
 spec:
   backoffLimit: 5            # 실패 시 재시도 횟수 (MySQL이 아직 준비 중일 수 있음)
   template:
