@@ -1,5 +1,0 @@
-BeautifulSoup4
-requests
-pandas
-lxml
-tqdm

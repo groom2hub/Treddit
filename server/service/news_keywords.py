@@ -1,29 +1,23 @@
-import pandas as pd
-from collections import Counter
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
-search_dates = ['20240613', '20240614', '20240615', '20240616', '20240617', '20240618', '20240619']
+from models import DailyKeyword
 
-def get_news_keywords():
 
-    data = []
+def get_news_keywords(db: Session, days: int):
+    """최근 days일의 뉴스 키워드를 오래된 날짜부터 반환한다."""
+    dates = db.scalars(
+        select(DailyKeyword.keyword_date).distinct().order_by(DailyKeyword.keyword_date.desc()).limit(days)
+    ).all()
+    rows = db.scalars(
+        select(DailyKeyword).where(DailyKeyword.keyword_date.in_(dates)).order_by(DailyKeyword.keyword_date, DailyKeyword.rank)
+    ).all()
 
-    for search_date in search_dates:
-        temp_dict = {}
-        csv_filename = f'./outputs/{search_date}/documents.csv'
-        df = pd.read_csv(csv_filename)
-        words = df.loc[:, 'document']
-        words_list = []
-        for line in words:
-            w = line.split()
-            words_list += w
+    data = {}
+    for row in rows:
+        data.setdefault(row.keyword_date.strftime('%Y%m%d'), []).append({'word': row.word, 'count': row.count})
 
-        counter = Counter(words_list)
-        temp_dict['date'] = search_date
-        words_dict = dict(counter.most_common(100))
-        temp_dict['words'] = [{'word': word, 'count': count} for word, count in zip(words_dict.keys(), words_dict.values())]
-        #temp_dict['words'] = [{'word': word, 'count': count} for word, count in dict(counter.most_common(10))]
-        #temp_dict['words'] = [word for word, count in counter.most_common(100)]
-        data.append(temp_dict)
-        print('=' * 50)
-    print(data)
-    return {'news_keywords': data, 'search_dates': search_dates}
+    return {
+        'news_keywords': [{'date': date, 'words': words} for date, words in data.items()],
+        'search_dates': list(data),
+    }

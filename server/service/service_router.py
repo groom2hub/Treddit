@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
+
+from database import get_db
 
 from . import chatgpt
 from . import naver_news_search
@@ -44,16 +47,16 @@ def get_naver_contents(searchWord: naver_contents_search.SearchWord):
     return naver_contents_search.search_naver_contents(searchWord.content)
 
 @router.get("/newskeywords")
-def get_news_keywords():
-    return news_keywords.get_news_keywords()
+def get_news_keywords(days: int = Query(50, ge=1, le=365), db: Session = Depends(get_db)):
+    return news_keywords.get_news_keywords(db, days)
 
 @router.get("/realtimesearchwords")
 def get_realtime_searchwords():
     return realtime_searchwords.get_realtime_searchwords()
 
 @router.get("/topictrends")
-def get_topic_trends():
-    return topic_trends.get_topic_trends()
+def get_topic_trends(days: int = Query(50, ge=1, le=365), db: Session = Depends(get_db)):
+    return topic_trends.get_topic_trends(db, days)
 
 @router.get("/wordcloud")
 def get_word_cloud():
