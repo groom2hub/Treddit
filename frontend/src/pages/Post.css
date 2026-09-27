@@ -1,0 +1,220 @@
+.post-page {
+    background-color: #F4FFFF;
+    width: 100vw;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.post-container {
+    background-color: #F4FFFF;
+    border: 2px solid #3d8190;
+    border-radius: 20px;
+    width: 80%;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.post-container br1 {
+    width: 97%;
+    align-self: center;
+    border: 1px solid #3d8190;
+}
+
+.post-title-container {
+    background-color: #F4FFFF;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 2%;
+    padding-bottom: 0%;
+}
+
+.post-detail-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-title {
+    font-size: 200%;
+    color: #3d8190;
+    font-weight: bold;
+}
+
+.post-writer-info {
+    font-size: 100%;
+    color: #888888;
+    white-space: "pre-line"
+}
+
+.post-button-container {
+    width: 20%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: end;
+    padding: 1%;
+}
+
+.post-button {
+    background-color: #3d8190;
+    border: 1px solid #3d8190;
+    color: #F4FFFF;
+    border-radius: 10px;
+    width: 40%;
+    height: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.post-content {
+    background-color: #F4FFFF;
+    width: 100%;
+    height: 50%;
+    overflow-y: auto; 
+    font-size: 150%;
+    color: #3d8190;
+    box-sizing: border-box;
+    padding: 1% 3%;
+}
+
+.comment-container {
+    background-color: #F4FFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 40%;
+    box-sizing: border-box;
+    padding: 1% 2%;
+}
+
+.comment-content-container {
+    width: 100%;
+    height: 69%;
+    border: 1px solid #3d8190;
+    border-radius: 10px;
+    overflow: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 1%;
+}
+
+.comment-content-container p {
+    color: #3d8190;
+    font-size: 130%;
+    font-weight: bold;
+    margin: 0;
+    margin-bottom: 0.5%;
+}
+
+.comment-content {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    color: #3d8190;
+    box-sizing: border-box;
+    padding: 0.5%;
+}
+
+.comment-detail {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-self: center;
+    align-items: end;
+    border-top: 1px solid #3d8190;
+}
+
+.comment-content p1 {
+    color: #3d8190;
+    font-size: 120%;
+    font-weight: bold;
+    margin-bottom: 1%;
+}
+
+.comment-content p2 {
+    font-size: 100%;
+    margin-left: 1%;
+}
+
+.comment-content p3 {
+    font-size: 70%;
+    margin: 1%;
+}
+
+.comment-edit-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.comment-edit-button {
+    background-color: #3d8190;
+    border: 1px solid #3d8190;
+    color: #F4FFFF;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 10%;
+    cursor: pointer;
+
+}
+
+.comment-input-container {
+    background-color: #ffffff;
+    border: 1px solid #3d8190;
+    border-radius: 10px;
+    width: 100%;
+    height: 30%;
+    display: flex;
+    flex-direction: row;
+    justify-self: end;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 0% 0.5%;
+}
+
+.comment-input {
+    background-color: #F4FFFF;
+    border: none;
+    width: 95%;
+    height: 90%;
+    box-sizing: border-box;
+    padding: 0.5%;
+    overflow: hidden;
+    resize: none;
+    outline: none;
+}
+
+.comment-input.has-content {
+    color: #3d8190;
+}
+
+.comment-button {
+    background-color: #3d8190;
+    border: 1px solid #3d8190;
+    color: #F4FFFF;
+    border-radius: 10px;
+    width: 6%;
+    height: 90%;
+    display: flex;
+    justify-self: flex-end;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+}
