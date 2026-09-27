@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     naver_ad_customer_id: str = ""
 
     openai_key: str = ""
+    openai_model: str = "gpt-4o-mini"
 
 
 settings = Settings()
